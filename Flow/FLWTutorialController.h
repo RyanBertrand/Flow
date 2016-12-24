@@ -139,6 +139,11 @@ extern NSString * const FLWTutorialRandomSuccessMessage;
  */
 - (BOOL)isRunningTutorialWithIdentifier:(NSString *)identifier;
 
+/**
+Returns YES if the tutorial with 'identifier' has been completed.
+*/
+- (BOOL)hasCompletedTutorialWithIdentifier:(NSString *)identifier;
+
 @end
 
 
