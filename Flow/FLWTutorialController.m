@@ -659,6 +659,11 @@ static void shuffleArray(NSMutableArray *array)
     return randomSuccessMessage;
 }
 
+- (BOOL)hasCompletedTutorialWithIdentifier:(NSString *)identifier
+{
+    return [self _hasCompletedTutorialWithIdentifier:identifier];
+}
+
 @end
 
 
