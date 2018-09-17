@@ -39,7 +39,7 @@ NSString * const FLWTutorialControllerTutorialKey = @"FLWTutorialControllerTutor
 
 NSString * const FLWTutorialRandomSuccessMessage = @"FLWTutorialRandomSuccessMessage";
 
-static CGFloat preferredTutorialHeight = 44.0 + 20.0;
+static CGFloat preferredTutorialHeight = 44.0;
 static CGFloat slideInAndOutDuration = 0.5;
 static CGFloat slideOutDelay = 1.0;
 
@@ -554,22 +554,45 @@ static void shuffleArray(NSMutableArray *array)
 
     switch (tutorial.position) {
         case FLWTutorialPositionTop:
-            return CGRectMake(0.0, -additionalHeight, CGRectGetWidth(containerView.bounds), preferredTutorialHeight + additionalHeight);
+            if (@available(iOS 11.0, *)) {
+                UIEdgeInsets safeArea = [UIApplication sharedApplication].keyWindow.safeAreaInsets;
+                return CGRectMake(0.0, -additionalHeight, CGRectGetWidth(containerView.bounds), preferredTutorialHeight + additionalHeight + safeArea.top);
+            } else {
+                // Fallback on earlier versions
+                return CGRectMake(0.0, -additionalHeight, CGRectGetWidth(containerView.bounds), preferredTutorialHeight + 20 + additionalHeight);
+            }
             break;
         case FLWTutorialPositionBottom:
-            return CGRectMake(0.0, containerView.frame.size.height - preferredTutorialHeight, CGRectGetWidth(containerView.bounds), preferredTutorialHeight);
+            if (@available(iOS 11.0, *)) {
+                UIEdgeInsets safeArea = [UIApplication sharedApplication].keyWindow.safeAreaInsets;
+                return CGRectMake(0.0, containerView.frame.size.height - (preferredTutorialHeight + safeArea.bottom), CGRectGetWidth(containerView.bounds), preferredTutorialHeight + safeArea.bottom);
+            } else {
+                // Fallback on earlier versions
+                return CGRectMake(0.0, containerView.frame.size.height - (preferredTutorialHeight + 20), CGRectGetWidth(containerView.bounds), preferredTutorialHeight + 20);
+            }
             break;
     }
 }
 
 - (CGAffineTransform)_transformToHideTutorial:(id<FLWTutorial>)tutorial
 {
+    CGFloat amount = preferredTutorialHeight;
+    if (@available(iOS 11.0, *)) {
+        UIEdgeInsets safeArea = [UIApplication sharedApplication].keyWindow.safeAreaInsets;
+        if(tutorial.position == FLWTutorialPositionTop){
+            amount += safeArea.top;
+        }
+        else if(tutorial.position == FLWTutorialPositionBottom){
+            amount += safeArea.bottom;
+        }
+    }
+    
     switch (tutorial.position) {
         case FLWTutorialPositionTop:
-            return CGAffineTransformMakeTranslation(0.0, - preferredTutorialHeight);
+            return CGAffineTransformMakeTranslation(0.0, - amount);
             break;
         case FLWTutorialPositionBottom:
-            return CGAffineTransformMakeTranslation(0.0, preferredTutorialHeight);
+            return CGAffineTransformMakeTranslation(0.0, amount);
             break;
     }
 }
